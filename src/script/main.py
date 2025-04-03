@@ -1,6 +1,6 @@
-import Demo.src.VideoStream.D435i as D435i
-import Demo.src.tools.yolo5dect as Yolo5DCT
-import Demo.src.tools.FingerIdentify as FingerId
+import src.VideoStream.D435i as D435i
+import src.tools.yolo5dect as Yolo5DCT
+import src.tools.FingerIdentify as FingerId
 import cv2
 
 
