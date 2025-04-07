@@ -3,35 +3,35 @@ import mediapipe as mp
 import math
 
 # 初始化 MediaPipe Pose
-# mp_pose = mp.solutions.pose
-# pose = mp_pose.Pose()
-# import numpy as np
+mp_pose = mp.solutions.pose
+pose = mp_pose.Pose()
+import numpy as np
 
 # 检测摔倒的阈值（需要根据实际情况进行调整）
 ANGLE_THRESHOLD = 70  # 用于检测人体直立的角度阈值
 
 #
-# class FallDetectorQueue:
-#     def __init__(self, buffersize=5, threshold=1):
-#         self.__buffersize = buffersize
-#         self.__threshold = threshold
-#         self.y_value_history = np.zeros(buffersize, dtype=np.uint8)
-#         self.index = 0
-#
-#     def change_buffersize(self, buffersize):
-#         self.__buffersize = buffersize
-#
-#     def change_threshold(self, threshold):
-#         self.__threshold = threshold
-#
-#     def add_frames(self, y_values):
-#         max_previous = np.max(self.y_value_history)
-#         if max_previous - y_values > self.__threshold:
-#             print("可能摔倒")
-#             return True
-#         self.y_value_history[self.index] = y_values
-#         self.index = (self.index + 1) % self.__buffersize
-#
+class FallDetectorQueue:
+    def __init__(self, buffersize=5, threshold=1):
+        self.__buffersize = buffersize
+        self.__threshold = threshold
+        self.y_value_history = np.zeros(buffersize, dtype=np.uint8)
+        self.index = 0
+
+    def change_buffersize(self, buffersize):
+        self.__buffersize = buffersize
+
+    def change_threshold(self, threshold):
+        self.__threshold = threshold
+
+    def add_frames(self, y_values):
+        max_previous = np.max(self.y_value_history)
+        if max_previous - y_values > self.__threshold:
+            print("可能摔倒")
+            return True
+        self.y_value_history[self.index] = y_values
+        self.index = (self.index + 1) % self.__buffersize
+
 #
 def empty(x):
     pass
@@ -43,7 +43,7 @@ cv2.createTrackbar("Angle", "Parameters", 0, 180, empty)
 cv2.createTrackbar("body_ground_angle", "Parameters", 75, 180, empty)
 cv2.createTrackbar("error_threshold", "Parameters", 0, 1, empty)
 cv2.createTrackbar("velocity", "Parameters", 0, 1, empty)
-# fall_detector = FallDetectorQueue()
+fall_detector = FallDetectorQueue()
 
 
 def calculate_angle(a, b, c):
@@ -94,13 +94,13 @@ def judgment_method(landmarks):
         if nose[1] > mid_y:
             return True
 
-    # def velocity(left_hip, right_hip):
-    #     speed = cv2.getTrackbarPos("velocity", "Parameters")
-    #     mid_x = (left_hip[0] + right_hip[0]) / 2
-    #     mid_y = (left_hip[1] + right_hip[1]) / 2
-    #     fall_detector.change_threshold(speed)
-    #
-    #     return fall_detector.add_frames(mid_y)
+    def velocity(left_hip, right_hip):
+        speed = cv2.getTrackbarPos("velocity", "Parameters")
+        mid_x = (left_hip[0] + right_hip[0]) / 2
+        mid_y = (left_hip[1] + right_hip[1]) / 2
+        fall_detector.change_threshold(speed)
+
+        return fall_detector.add_frames(mid_y)
 
     # falled = calculatxcfe_torso_angle(left_shoulder, right_shoulder, left_hip, right_hip)
     # falled = nose_ankle_position(left_ankle, right_ankle, nose)
@@ -135,3 +135,5 @@ def main():
 
     cap.release()
     cv2.destroyAllWindows()
+if __name__ == '__main__':
+    main()

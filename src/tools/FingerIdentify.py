@@ -24,11 +24,11 @@ class RockPaperScissors:
 
     def recognize_gesture(self, fingers):
         if fingers == [0, 0, 0, 0, 0]:
-            return "Rock (石头)"
+            return "Rock"
         elif fingers == [0, 1, 1, 0, 0]:
-            return "Scissors (剪刀)"
+            return "Scissors"
         elif fingers == [1, 1, 1, 1, 1]:
-            return "Paper (布)"
+            return "Paper"
         else:
             return "Unknown"
 
@@ -52,5 +52,11 @@ class RockPaperScissors:
 
 # 运行游戏
 if __name__ == "__main__":
-    game = RockPaperScissors()
-    game.detect()
+    cap =cv2.VideoCapture(0)
+    rock = RockPaperScissors()
+    while True:
+        ret, frame = cap.read()
+        rock.detect(frame)
+        cv2.imshow("Frame", frame)
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            break

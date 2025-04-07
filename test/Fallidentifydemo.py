@@ -1,8 +1,8 @@
 import cv2
 import mediapipe as mp
 import math
-import Demo.src.VideoStream.D435i as D435i
-import Demo.src.VideoStream.ImageStream as ImageStream
+import src.VideoStream.D435i as D435i
+import src.VideoStream.ImageStream as ImageStream
 import numpy as np
 
 # Initialize MediaPipe Pose

@@ -1,6 +1,9 @@
+from asyncio import wait_for
+
 import cv2
 import numpy as np
 import pyrealsense2 as rs
+from torch.fx.experimental.unification.unification_tools import get_in
 
 
 class RealSenseD435i:
@@ -40,7 +43,8 @@ class RealSenseD435i:
         print("相机已停止")
 
     def get_frames(self):
-        frames = self.pipeline.wait_for_frames()
+
+        frames = self.pipeline.wait_for_frames(timeout_ms=500)
         color_frame = frames.get_color_frame()
         depth_frame = frames.get_depth_frame()
         color_image = np.asanyarray(color_frame.get_data())
@@ -57,3 +61,11 @@ class RealSenseD435i:
         color = (0, 255, 0)
         cv2.line(frame, (0, y), (640, y), (0, 255, 0), 2, )  # 画水平线（y固定）
         cv2.line(frame, (x, 0), (x, 480), (0, 255, 0), 2, )  # 画垂直线（x固定）
+if __name__ == "__main__":
+    r = RealSenseD435i()
+    while True:
+
+        a = r.get_frames()[0]
+        cv2.imshow("RealSense D435i", a)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
