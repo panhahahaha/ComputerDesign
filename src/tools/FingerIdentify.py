@@ -44,6 +44,7 @@ class RockPaperScissors:
         print(result)
         if result.multi_hand_landmarks:
             for hand_landmarks in result.multi_hand_landmarks:
+                print(hand_landmarks.landmark,sep='')
                 self.mp_draw.draw_landmarks(frame, hand_landmarks, self.mp_hands.HAND_CONNECTIONS)
                 fingers = self.get_finger_status(hand_landmarks)
                 gesture = self.recognize_gesture(fingers)

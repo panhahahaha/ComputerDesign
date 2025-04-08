@@ -1,18 +1,18 @@
 import cv2
 import torch
 import random
-import Demo.src.tools.convert_coor as convert
+import src.tools.convert_coor as convert
 
 
 class YOLODepthDetector:
     def __init__(self, model_path='yolov5s.pt', realsense=None):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.model = torch.hub.load('/home/p/yolov5', 'custom', path=model_path, source='local')
+        self.model = torch.hub.load(r'C:\Users\huawei\ComputerDesign\yolov5-master', 'custom', path=model_path, source='local')
         self.model.to(self.device).eval()
         self.D = realsense  # RealSense 设备对象
         self.colors = [[random.randint(0, 255) for _ in range(3)] for _ in range(len(self.model.names))]
 
-    def process_frame(self, color_frame, depth_frame,K):
+    def process_frame(self, color_frame,):
         results = self.model(color_frame)
 
         for *xyxy, conf, cls in results.xyxy[0]:
@@ -26,10 +26,11 @@ class YOLODepthDetector:
 
             center_x = int((xyxy[0] + xyxy[2]) / 2)
             center_y = int((xyxy[1] + xyxy[3]) / 2)
-            depth = depth_frame[center_y, center_x]
-            get_real_coor = convert.pixel_to_world(center_x, center_y, depth, K)
+            # depth = depth_frame[center_y, center_x]
+            # get_real_coor = convert.pixel_to_world(center_x, center_y, 0, )
 
-            coor_text = f"{get_real_coor[0]:.2f} {get_real_coor[1]:.2f} {get_real_coor[2]:.2f}"
+            # coor_text = f"{get_real_coor[0]:.2f} {get_real_coor[1]:.2f} {get_real_coor[2]:.2f}"
+            coor_text = f"{center_x:.2f} {center_y:.2f} {30:.2f}"
             cv2.putText(color_frame, coor_text, (int(xyxy[0]), int(xyxy[1]) - 30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color,
                         2)
 
@@ -42,8 +43,8 @@ class YOLODepthDetector:
             return
 
         while True:
-            color_frame, depth_frame = self.D.get_frames()
-            processed_frame = self.process_frame(color_frame, depth_frame)
+            ret,color_frame = cap.read()
+            processed_frame = self.process_frame(color_frame)
             cv2.imshow('YOLOv5 Detection', processed_frame)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
